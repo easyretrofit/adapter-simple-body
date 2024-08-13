@@ -1,0 +1,1 @@
+# easy-retrofit-adapter-simple-body
