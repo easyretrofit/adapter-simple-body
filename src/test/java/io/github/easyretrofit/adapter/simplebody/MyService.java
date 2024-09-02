@@ -66,12 +66,15 @@ public class MyService {
 
     public interface MyServiceApi {
         @GET("/hello")
-        @ErrorResponse(codeFieldName="code", codeType=int.class , messageFieldName="msg", messageType=String.class)
+        @ErrorResponseBody(codeFieldName="code", codeType=int.class , messageFieldName="msg", messageType=String.class)
         Result<List<HelloBean>> getHellos();
 
 
         @GET("/hello")
-        @ErrorResponse(codeFieldName="code", codeType=int.class , messageFieldName="msg", messageType=String.class)
+        @ErrorResponseBody(codeFieldName="code", codeType=int.class , messageFieldName="msg", messageType=String.class)
         ResultStatic<List<HelloBean>> getHellos2();
+
+        @GET("/hello")
+        Result<List<HelloBean>> getHellos3();
     }
 }

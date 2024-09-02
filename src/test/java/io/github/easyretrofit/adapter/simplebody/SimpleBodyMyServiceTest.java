@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -18,7 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.IOException;
 import java.util.*;
 
-import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AFTER_REQUEST;
 import static org.junit.Assert.*;
 
 public class SimpleBodyMyServiceTest {
@@ -28,14 +26,6 @@ public class SimpleBodyMyServiceTest {
     @Before
     public void setUp() {
         myService = new MyService();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(server.url("/"))
-//                .addConverterFactory(ResultErrorBodyConverterFactory.INSTANCE)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
-                .build();
-
-        myServiceApi = retrofit.create(MyServiceApi.class);
     }
 
     @After
@@ -45,6 +35,13 @@ public class SimpleBodyMyServiceTest {
 
     @Test
     public void simpleBodySuccess200Test() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
+                .build();
+
+        myServiceApi = retrofit.create(MyServiceApi.class);
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(myService.getHellos());
         server.enqueue(new MockResponse().setBody(json));
@@ -55,6 +52,13 @@ public class SimpleBodyMyServiceTest {
 
     @Test
     public void bodySuccess404() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
+                .build();
+
+        myServiceApi = retrofit.create(MyServiceApi.class);
         server.enqueue(new MockResponse()
                 .setResponseCode(404)
                 .setBody("{\"message\":\"Unable to locate resource\"}"));
@@ -68,14 +72,41 @@ public class SimpleBodyMyServiceTest {
 
     @Test
     public void bodySuccess404Static() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
+                .build();
         server.enqueue(new MockResponse()
                 .setResponseCode(404));
 
         MyService.ResultStatic<List<HelloBean>> hellos;
-
+        myServiceApi = retrofit.create(MyServiceApi.class);
         hellos = myServiceApi.getHellos2();
 
         assertEquals(404, hellos.getCode());
+    }
+
+    @Test
+    public void bodySuccess404WithErrorResponse() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create(errorParameter -> {
+                    throw new RuntimeException(errorParameter.getResponse().toString());
+                }))
+                .build();
+        server.enqueue(new MockResponse()
+                .setResponseCode(404));
+        myServiceApi = retrofit.create(MyServiceApi.class);
+
+        Result<List<HelloBean>> hellos;
+        try {
+            hellos = myServiceApi.getHellos3();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            assertNotNull(e.getMessage());
+        }
     }
 
 

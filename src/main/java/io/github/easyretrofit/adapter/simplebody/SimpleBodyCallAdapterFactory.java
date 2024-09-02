@@ -6,8 +6,10 @@ import retrofit2.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 
 /**
@@ -17,8 +19,12 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
 
     private final Class<?>[] excludeCallTypes;
 
-    public SimpleBodyCallAdapterFactory(Class<?>[] excludeCallTypes) {
+    private final Function<ErrorParameter, ?> customErrorFunction;
+
+
+    public SimpleBodyCallAdapterFactory(Class<?>[] excludeCallTypes, Function<ErrorParameter, ?> customErrorFunction) {
         this.excludeCallTypes = excludeCallTypes;
+        this.customErrorFunction = customErrorFunction;
     }
 
     /**
@@ -28,7 +34,7 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
      * @return BodyCallAdapterFactory
      */
     public static SimpleBodyCallAdapterFactory create() {
-        return new SimpleBodyCallAdapterFactory(null);
+        return new SimpleBodyCallAdapterFactory(null, null);
     }
 
     /**
@@ -38,7 +44,15 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
      * @return BodyCallAdapterFactory
      */
     public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude) {
-        return new SimpleBodyCallAdapterFactory(exclude);
+        return new SimpleBodyCallAdapterFactory(exclude, null);
+    }
+
+    public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude, Function<ErrorParameter, ?> customErrorFunction) {
+        return new SimpleBodyCallAdapterFactory(exclude, customErrorFunction);
+    }
+
+    public static SimpleBodyCallAdapterFactory create(Function<ErrorParameter, ?> customErrorFunction) {
+        return new SimpleBodyCallAdapterFactory(null, customErrorFunction);
     }
 
     @Override
@@ -81,7 +95,7 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
             return null;
         }
 
-        return new BodyCallAdapter<>(rawType, annotations, retrofit);
+        return new BodyCallAdapter<>(rawType, annotations, retrofit, customErrorFunction);
     }
 
 
@@ -93,10 +107,13 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
 
         private final Annotation[] annotations;
 
-        BodyCallAdapter(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+        private final Function<ErrorParameter, ?> customErrorFunction;
+
+        BodyCallAdapter(Type returnType, Annotation[] annotations, Retrofit retrofit, Function<ErrorParameter, ?> customErrorFunction) {
             this.returnType = returnType;
             this.retrofit = retrofit;
             this.annotations = annotations;
+            this.customErrorFunction = customErrorFunction;
         }
 
         @Override
@@ -126,15 +143,23 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
                 return converter.convert(Objects.requireNonNull(errorBody));
             } catch (IOException e) {
                 for (Annotation annotation : annotations) {
-                    if (annotation instanceof ErrorResponse) {
-                        return reflectErrorResponse((ErrorResponse) annotation, response, returnType);
+                    if (annotation instanceof ErrorResponseBody) {
+                        return reflectErrorResponse((ErrorResponseBody) annotation, response, returnType);
+                    }
+                }
+                if (customErrorFunction != null) {
+                    Object apply = customErrorFunction.apply(new ErrorParameter(response, returnType));
+                    try {
+                        return (R) apply;
+                    } catch (ClassCastException ec) {
+                        throw new RuntimeException(ec);
                     }
                 }
                 throw new RuntimeException(e);
             }
         }
 
-        private static <R> R reflectErrorResponse(ErrorResponse annotation, Response<R> response, Type returnType) throws RuntimeException {
+        private static <R> R reflectErrorResponse(ErrorResponseBody annotation, Response<R> response, Type returnType) throws RuntimeException {
             try {
                 Class<?> clazz = Class.forName(returnType.getTypeName());
                 Object returnBody = clazz.newInstance();
@@ -163,27 +188,6 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
                 return returnType.getDeclaredField(fieldName);
             } catch (NoSuchFieldException e) {
                 return null;
-            }
-        }
-
-        private static Class<?> convertTypeToClass(Type type) {
-            if (type instanceof Class<?>) {
-                return (Class<?>) type;
-            } else if (type instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) type;
-                return (Class<?>) parameterizedType.getRawType();
-            } else if (type instanceof GenericArrayType) {
-                GenericArrayType genericArrayType = (GenericArrayType) type;
-                Type componentType = genericArrayType.getGenericComponentType();
-                return Array.newInstance(convertTypeToClass(componentType), 0).getClass();
-            } else if (type instanceof TypeVariable) {
-                TypeVariable<?> typeVariable = (TypeVariable<?>) type;
-                return convertTypeToClass(typeVariable.getBounds()[0]);
-            } else if (type instanceof WildcardType) {
-                WildcardType wildcardType = (WildcardType) type;
-                return convertTypeToClass(wildcardType.getUpperBounds()[0]);
-            } else {
-                throw new IllegalArgumentException("Unsupported type: " + type);
             }
         }
 

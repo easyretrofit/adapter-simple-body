@@ -4,8 +4,9 @@ import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface ErrorResponse {
+@Target({ElementType.METHOD})
+public @interface ErrorResponseBody {
+
     String codeFieldName() default "";
 
     Class<?> codeType() default Object.class;
