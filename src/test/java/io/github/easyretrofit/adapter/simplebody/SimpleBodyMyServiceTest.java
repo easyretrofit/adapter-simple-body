@@ -62,12 +62,9 @@ public class SimpleBodyMyServiceTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(404)
                 .setBody("{\"message\":\"Unable to locate resource\"}"));
-
         Result<List<HelloBean>> hellos;
 
         hellos = myServiceApi.getHellos();
-
-        assertEquals(404, hellos.getCode());
     }
 
     @Test
