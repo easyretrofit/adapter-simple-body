@@ -39,6 +39,10 @@ Retrofit retrofit = new Retrofit.Builder()
 
 ### set exclude call adapter type
 if you add any other call adapter, and those call adapter maybe has conflict with the current call adapter, you can set the call adapter type to exclude
+
+by default, the current call adapter already exclude the official call adapter type (Call, Flowable, Observable, Single, etc.), 
+so current call adapter will not handle the official call adapter type. so, you can use this call adapter with official call adapter.
+
 library provide two methods to set the call adapter type to exclude.
 
 ```java
