@@ -37,17 +37,32 @@ Retrofit retrofit = new Retrofit.Builder()
 
 ## Advanced Usage
 
+### set exclude call adapter type
+if you add any other call adapter, and those call adapter maybe has conflict with the current call adapter, you can set the call adapter type to exclude
+library provide two methods to set the call adapter type to exclude.
+
+```java
+public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude) {
+    return new SimpleBodyCallAdapterFactory(exclude, null);
+}
+
+public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude, Function<ErrorParameter, ?> customErrorFunction) {
+    return new SimpleBodyCallAdapterFactory(exclude, customErrorFunction);
+}
+```
+
+
 ### use error Function
 If your response returns an error Body and the body cannot be parsed by the converter(json xml or others), resulting in an exception being returned,you can set global exception handling or customize the handling return value
 
 ```java
-        Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(server.url("/"))
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create(errorParameter -> {
-            throw new RuntimeException(errorParameter.getResponse().toString());
-        }))
-        .build();
+Retrofit retrofit = new Retrofit.Builder()
+.baseUrl(server.url("/"))
+.addConverterFactory(GsonConverterFactory.create())
+.addCallAdapterFactory(SimpleBodyCallAdapterFactory.create(errorParameter -> {
+    throw new RuntimeException(errorParameter.getResponse().toString());
+}))
+.build();
 ```
 
 ### use @ErrorResponseBody
