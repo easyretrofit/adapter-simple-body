@@ -1,15 +1,15 @@
 # easy-retrofit-adapter-simple-body
-When a synchronization request is made, the response value is a `<T>` that is not wrapped by the Call<T> Class of Retrofit, 
+When a synchronization request is made, the response value is a `<T>` that is not wrapped by the `Call<T>` Class of Retrofit, 
 and this `<T>` has the same structure as the returned value of the called API
 
 ## Usage
 
 ### used with easy-retrofit
 
-#### create a SimpleBodyConverterFactoryBuilder class
+#### create a SimpleBodyCallAdapterFactoryBuilder class
 ```java
 
-public class SimpleBodyConverterFactoryBuilder extends BaseConverterFactoryBuilder {
+public class SimpleBodyCallAdapterFactoryBuilder extends BaseCallAdapterFactoryBuilder {
     @Override
     public Converter.Factory build() {
         return SimpleBodyCallAdapterFactory.create();
@@ -18,10 +18,11 @@ public class SimpleBodyConverterFactoryBuilder extends BaseConverterFactoryBuild
 
 ```
 
-#### add SimpleBodyConverterFactoryBuilder to your project
+#### add SimpleBodyCallAdapterFactoryBuilder to your project
 ```java
 @RetrofitBuilder(baseUrl = "${app.backend.url}",
-        addConverterFactory = {GsonConvertFactoryBuilder.class, SimpleBodyConverterFactoryBuilder.class})
+        addConverterFactory = {GsonConvertFactoryBuilder.class},
+        addCallAdapterFactory = {SimpleBodyCallAdapterFactoryBuilder.class})
 public interface HelloApi {
     
 }
