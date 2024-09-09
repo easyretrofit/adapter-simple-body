@@ -1,5 +1,6 @@
 package io.github.easyretrofit.adapter.simplebody;
 
+import retrofit2.Call;
 import retrofit2.http.GET;
 
 import java.util.Collections;
@@ -76,5 +77,8 @@ public class MyService {
 
         @GET("/hello")
         Result<List<HelloBean>> getHellos3();
+
+        @GET("/hello")
+        Call<Result<List<HelloBean>>> getCallHellos();
     }
 }

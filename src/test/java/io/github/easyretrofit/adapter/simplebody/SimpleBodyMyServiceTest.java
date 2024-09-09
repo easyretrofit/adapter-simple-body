@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -104,6 +105,22 @@ public class SimpleBodyMyServiceTest {
             System.out.println(e.getMessage());
             assertNotNull(e.getMessage());
         }
+    }
+
+    @Test
+    public void bodySuccessUserCallAdapter() throws IOException {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(myService.getHellos());
+        server.enqueue(new MockResponse().setBody(json));
+        myServiceApi = retrofit.create(MyServiceApi.class);
+
+        Call<Result<List<HelloBean>>> callHellos = myServiceApi.getCallHellos();
+        Result<List<HelloBean>> body = callHellos.execute().body();
+        assertEquals(200, body.getCode());
     }
 
 
