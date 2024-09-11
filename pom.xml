@@ -19,6 +19,14 @@
         <junit.version>4.13.2</junit.version>
     </properties>
 
+    <url>https://github.com/easyretrofit/${project.artifactId}</url>
+
+    <scm>
+        <url>https://github.com/easyretrofit/${project.artifactId}</url>
+        <connection>scm:git:git://github.com/easyretrofit/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:ssh://github.com/easyretrofit/${project.artifactId}.git</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
