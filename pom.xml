@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <description>When a synchronization request is made, the response value is a JOPO object that is not wrapped by the Call Class of Retrofit, and this JOPO object has the same structure as the returned value of the called API</description>
     <artifactId>adapter-simple-body</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
 
