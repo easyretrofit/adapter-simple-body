@@ -14,13 +14,13 @@ Maven:
 <dependency>
     <groupId>io.github.easyretrofit</groupId>
     <artifactId>adapter-simple-body</artifactId>
-    <version>${adapter-simple-body.version}</version> <!-- 替换为实际的版本号 -->
+    <version>${latest.version}</version> <!-- 替换为实际的版本号 -->
 </dependency>
 ```
 
 Gradle:
 ```groovy
-implementation 'io.github.easyretrofit:adapter-simple-body:${adapter-simple-body.version}'
+implementation 'io.github.easyretrofit:adapter-simple-body:${latest.version}'
 ```
 
 
