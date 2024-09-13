@@ -38,7 +38,7 @@ public class SimpleBodyCallAdapterFactoryBuilder extends BaseCallAdapterFactoryB
 
 ```
 
-#### add SimpleBodyCallAdapterFactoryBuilder to your project
+#### add SimpleBodyCallAdapterFactoryBuilder to your RetrofitBuilder
 ```java
 @RetrofitBuilder(baseUrl = "${app.backend.url}",
         addConverterFactory = {GsonConvertFactoryBuilder.class},
