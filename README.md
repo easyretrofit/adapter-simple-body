@@ -9,6 +9,20 @@ When a synchronization request is made, the response value is a `<T>` that is no
 and this `<T>` has the same structure as the returned value of the called API
 
 ## Usage
+Maven:
+```xml
+<dependency>
+    <groupId>io.github.easyretrofit</groupId>
+    <artifactId>adapter-simple-body</artifactId>
+    <version>${adapter-simple-body.version}</version> <!-- 替换为实际的版本号 -->
+</dependency>
+```
+
+Gradle:
+```groovy
+implementation 'io.github.easyretrofit:adapter-simple-body:${adapter-simple-body.version}'
+```
+
 
 ### used with easy-retrofit
 
@@ -50,7 +64,7 @@ if you add any other call adapter, and those call adapter maybe has conflict wit
 by default, the current call adapter already exclude the official call adapter type (Call, Flowable, Observable, Single, etc.), 
 so current call adapter will not handle the official call adapter type. so, you can use this call adapter with official call adapter.
 
-library provide two methods to set the call adapter type to exclude.
+this library provide two methods to set the call adapter type to exclude.
 
 ```java
 public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude) {
@@ -64,7 +78,7 @@ public static SimpleBodyCallAdapterFactory create(Class<?>[] exclude, Function<E
 
 
 ### use error Function
-If your response returns an error Body and the body cannot be parsed by the converter(json xml or others), resulting in an exception being returned,you can set global exception handling or customize the handling return value
+If your response returns an error Body and the body cannot be parsed by the converter(json, xml or others), resulting in an exception being returned,you can set global exception handling or customize the handling return value
 
 ```java
 Retrofit retrofit = new Retrofit.Builder()
@@ -77,7 +91,7 @@ Retrofit retrofit = new Retrofit.Builder()
 ```
 
 ### use @ErrorResponseBody
-If your response returns an error Body and the body cannot be parsed by the converter(json xml or others), resulting in an exception being returned, you can use this annotation to map the values in your response. If your response object contains fields such as http status code, error message, etc
+If your response returns an error Body and the body cannot be parsed by the converter(json, xml or others), resulting in an exception being returned, you can use this annotation to map the values in your response. If your response object contains fields such as http status code, error message, etc
 
 ```java
 public class Result<T> {
