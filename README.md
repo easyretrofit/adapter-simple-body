@@ -1,3 +1,9 @@
+[![Version](https://img.shields.io/maven-central/v/io.github.easyretrofit/adapter-simple-body?logo=apache-maven&style=flat-square)](https://central.sonatype.com/artifact/io.github.easyretrofit/adapter-simple-body)
+[![Build](https://github.com/easyretrofit/adapter-simple-body/actions/workflows/build.yml/badge.svg)](https://github.com/easyretrofit/adapter-simple-body/actions/workflows/build.yml/badge.svg)
+[![License](https://img.shields.io/github/license/easyretrofit/adapter-simple-body.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+
+
+
 # easy-retrofit-adapter-simple-body
 When a synchronization request is made, the response value is a `<T>` that is not wrapped by the `Call<T>` Class of Retrofit, 
 and this `<T>` has the same structure as the returned value of the called API
