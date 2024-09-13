@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.easyretrofit.adapter.simplebody.MyService.MyServiceApi;
 import io.github.easyretrofit.adapter.simplebody.MyService.HelloBean;
+import okhttp3.Request;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
