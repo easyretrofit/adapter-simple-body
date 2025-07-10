@@ -69,22 +69,22 @@ public class SimpleBodyMyServiceTest {
         hellos = myServiceApi.getHellos();
     }
 
-    @Test
-    public void bodySuccess404Static() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(server.url("/"))
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
-                .build();
-        server.enqueue(new MockResponse()
-                .setResponseCode(404));
-
-        MyService.ResultStatic<List<HelloBean>> hellos;
-        myServiceApi = retrofit.create(MyServiceApi.class);
-        hellos = myServiceApi.getHellos2();
-
-        assertEquals(404, hellos.getCode());
-    }
+//    @Test
+//    public void bodySuccess404Static() {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(server.url("/"))
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(SimpleBodyCallAdapterFactory.create())
+//                .build();
+//        server.enqueue(new MockResponse()
+//                .setResponseCode(404));
+//
+//        MyService.ResultStatic<List<HelloBean>> hellos;
+//        myServiceApi = retrofit.create(MyServiceApi.class);
+//        hellos = myServiceApi.getHellos2();
+//
+//        assertEquals(404, hellos.getCode());
+//    }
 
     @Test
     public void bodySuccess404WithErrorResponse() {

@@ -6,7 +6,6 @@ import retrofit2.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -142,13 +141,8 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
             try {
                 return converter.convert(Objects.requireNonNull(errorBody));
             } catch (IOException e) {
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof ErrorResponseBody) {
-                        return reflectErrorResponse((ErrorResponseBody) annotation, response, returnType);
-                    }
-                }
                 if (customErrorFunction != null) {
-                    Object apply = customErrorFunction.apply(new ErrorParameter(response, returnType));
+                    Object apply = customErrorFunction.apply(new ErrorParameter(response, returnType, annotations, e));
                     try {
                         return (R) apply;
                     } catch (ClassCastException ec) {
@@ -158,38 +152,5 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
                 throw new RuntimeException(e);
             }
         }
-
-        private static <R> R reflectErrorResponse(ErrorResponseBody annotation, Response<R> response, Type returnType) throws RuntimeException {
-            try {
-                Class<?> clazz = Class.forName(returnType.getTypeName());
-                Object returnBody = clazz.newInstance();
-                if (annotation.codeType() != Objects.class && !annotation.codeFieldName().isEmpty()) {
-                    Field codeField = getField(annotation.codeFieldName(), clazz);
-                    if (codeField != null) {
-                        codeField.setAccessible(true);
-                        codeField.set(returnBody, response.code());
-                    }
-                }
-                if (annotation.messageType() != Objects.class && !annotation.messageFieldName().isEmpty()) {
-                    Field msgField = getField(annotation.messageFieldName(), clazz);
-                    if (msgField != null) {
-                        msgField.setAccessible(true);
-                        msgField.set(returnBody, response.message());
-                    }
-                }
-                return (R) returnBody;
-            } catch (IllegalAccessException | InstantiationException | ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-
-        private static Field getField(String fieldName, Class<?> returnType) {
-            try {
-                return returnType.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                return null;
-            }
-        }
-
     }
 }
