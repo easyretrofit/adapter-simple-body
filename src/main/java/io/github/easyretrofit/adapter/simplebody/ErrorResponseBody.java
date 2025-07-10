@@ -2,6 +2,7 @@ package io.github.easyretrofit.adapter.simplebody;
 
 import java.lang.annotation.*;
 
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -14,6 +15,4 @@ public @interface ErrorResponseBody {
     String messageFieldName() default "";
 
     Class<?> messageType() default Object.class;
-
-    String messageWrapper() default "";
 }

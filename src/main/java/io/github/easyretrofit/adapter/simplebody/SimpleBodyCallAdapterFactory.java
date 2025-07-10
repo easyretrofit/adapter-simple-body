@@ -141,13 +141,8 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
             try {
                 return converter.convert(Objects.requireNonNull(errorBody));
             } catch (IOException e) {
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof ErrorResponseBody) {
-                        return reflectErrorResponse((ErrorResponseBody) annotation, response, returnType);
-                    }
-                }
                 if (customErrorFunction != null) {
-                    Object apply = customErrorFunction.apply(new ErrorParameter(response, returnType));
+                    Object apply = customErrorFunction.apply(new ErrorParameter(response, returnType, annotations));
                     try {
                         return (R) apply;
                     } catch (ClassCastException ec) {
@@ -158,6 +153,7 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
             }
         }
 
+        @Deprecated
         private static <R> R reflectErrorResponse(ErrorResponseBody annotation, Response<R> response, Type returnType) throws RuntimeException {
             try {
                 Class<?> clazz = Class.forName(returnType.getTypeName());
@@ -173,8 +169,7 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
                     Field msgField = getField(annotation.messageFieldName(), clazz);
                     if (msgField != null) {
                         msgField.setAccessible(true);
-                        String messageFormat = StringWrapperUtils.formatWithStringFormat(annotation.messageWrapper(), response.message());
-                        msgField.set(returnBody, messageFormat);
+                        msgField.set(returnBody, response.message());
                     }
                 }
                 return (R) returnBody;
