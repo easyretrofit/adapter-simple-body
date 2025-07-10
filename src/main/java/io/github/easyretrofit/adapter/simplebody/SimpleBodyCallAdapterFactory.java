@@ -6,7 +6,6 @@ import retrofit2.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -174,7 +173,8 @@ public class SimpleBodyCallAdapterFactory extends CallAdapter.Factory {
                     Field msgField = getField(annotation.messageFieldName(), clazz);
                     if (msgField != null) {
                         msgField.setAccessible(true);
-                        msgField.set(returnBody, response.message());
+                        String messageFormat = StringWrapperUtils.formatWithStringFormat(annotation.messageWrapper(), response.message());
+                        msgField.set(returnBody, messageFormat);
                     }
                 }
                 return (R) returnBody;

@@ -135,7 +135,7 @@ public class Result<T> {
 
 public interface MyServiceApi {
     @GET("/hello")
-    @ErrorResponseBody(codeFieldName = "code", codeType = int.class, messageFieldName = "msg", messageType = String.class)
+    @ErrorResponseBody(codeFieldName = "code", codeType = int.class, messageFieldName = "msg", messageType = String.class, messageWrapper = "info: {}")
     Result<List<HelloBean>> getHellos();
 }
 ```

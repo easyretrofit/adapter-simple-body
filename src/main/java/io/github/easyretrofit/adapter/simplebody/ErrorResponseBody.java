@@ -14,4 +14,6 @@ public @interface ErrorResponseBody {
     String messageFieldName() default "";
 
     Class<?> messageType() default Object.class;
+
+    String messageWrapper() default "";
 }
